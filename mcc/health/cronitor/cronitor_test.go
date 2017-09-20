@@ -132,74 +132,70 @@ func healthCheckServer(t *testing.T) func(http.ResponseWriter, *http.Request) {
 }
 
 func TestCheckCreate(t *testing.T) {
-	servers := []*httptest.Server{
-		httptest.NewServer(http.HandlerFunc(healthCheckServer(t))),
-	}
-	for _, server := range servers {
-		defer server.Close()
+	server := httptest.NewServer(http.HandlerFunc(healthCheckServer(t)))
+	defer server.Close()
 
-		for _, tc := range healthCases {
-			check := NewCheck()
-			check.APIKey = "your-api-key"
-			message := map[string]interface{}{
-				"tags": strings.Split(tc.tags, " "),
-				"name": tc.name,
-				"type": "heartbeat",
-				"notifications": map[string][]string{
-					"emails": []string{
-						tc.email,
-					},
+	for _, tc := range healthCases {
+		check := NewCheck()
+		check.APIKey = "your-api-key"
+		message := map[string]interface{}{
+			"tags": strings.Split(tc.tags, " "),
+			"name": tc.name,
+			"type": "heartbeat",
+			"notifications": map[string][]string{
+				"emails": []string{
+					tc.email,
 				},
-				"rules": []map[string]interface{}{
-					{
-						"rule_type": "not_on_schedule",
-						"value":     tc.schedule,
-					},
+			},
+			"rules": []map[string]interface{}{
+				{
+					"rule_type": "not_on_schedule",
+					"value":     tc.schedule,
 				},
-				"note": tc.note,
-			}
-			res, err := check.Create(server.URL, message)
-			if err != nil {
-				t.Error(err)
-			}
-			if res.StatusCode != tc.status {
-				t.Errorf(
-					"Expected status %d but received %d: %s",
-					tc.status,
-					res.StatusCode,
-					res.Status,
-				)
-			}
-			m, err := ParseResponse(res.Body)
-			if err != nil {
-				t.Error(err)
-			}
-			if m["name"] != tc.name {
-				t.Errorf(
-					"Wrong name. Expected %s, found %s",
-					tc.name,
-					m["name"],
-				)
-			}
-			tmp, ok := m["tags"].([]interface{})
+			},
+			"note": tc.note,
+		}
+		res, err := check.Create(server.URL, message)
+		if err != nil {
+			t.Error(err)
+		}
+		if res.StatusCode != tc.status {
+			t.Errorf(
+				"Expected status %d but received %d: %s",
+				tc.status,
+				res.StatusCode,
+				res.Status,
+			)
+		}
+		m, err := ParseResponse(res.Body)
+		if err != nil {
+			t.Error(err)
+		}
+		if m["name"] != tc.name {
+			t.Errorf(
+				"Wrong name. Expected %s, found %s",
+				tc.name,
+				m["name"],
+			)
+		}
+		tmp, ok := m["tags"].([]interface{})
+		if !ok {
+			t.Error("Tags field is not slice of interfaces")
+		}
+		var tags []string
+		for _, v := range tmp {
+			s, ok := v.(string)
 			if !ok {
-				t.Error("Tags field is not slice of interfaces")
+				t.Error("Tag contents are not strings")
 			}
-			var tags []string
-			for _, v := range tmp {
-				s, ok := v.(string)
-				if !ok {
-					t.Error("Tag contents are not strings")
-				}
-				tags = append(tags, s)
-			}
-			if strings.Join(tags, " ") != tc.tags {
-				t.Errorf(
-					"Wrong tags. Expected %s, found %v",
-					tc.tags,
-					strings.Join(tags, " "),
-				)
-			}
+			tags = append(tags, s)
+		}
+		if strings.Join(tags, " ") != tc.tags {
+			t.Errorf(
+				"Wrong tags. Expected %s, found %v",
+				tc.tags,
+				strings.Join(tags, " "),
+			)
 		}
 	}
 }
