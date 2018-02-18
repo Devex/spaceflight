@@ -70,17 +70,16 @@ func WaitForInstance(
 	status string,
 ) (err error) {
 	var res *rds.DescribeDBInstancesOutput
-	for *instance.DBInstanceStatus != status {
-		id := instance.DBInstanceIdentifier
-		res, err = svc.DescribeDBInstances(
-			&rds.DescribeDBInstancesInput{
-				DBInstanceIdentifier: id,
-			},
-		)
+	input := &rds.DescribeDBInstancesInput{
+		DBInstanceIdentifier: instance.DBInstanceIdentifier,
+	}
+	current := *instance.DBInstanceStatus
+	for current != status {
+		res, err = svc.DescribeDBInstances(input)
 		if err != nil {
 			return
 		}
-		*instance = *res.DBInstances[0]
+		current = *res.DBInstances[0].DBInstanceStatus
 		// This is to avoid AWS API rate throttling.
 		// Should use configurable exponential back-off
 		time.Sleep(Duration)
