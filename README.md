@@ -2,11 +2,11 @@
 
 ## Aim
 
-The Spaceflight project aims to build a toolbox to ease administration and orchestration of infrastructure, in the broadest sense of those concepts, with the goal of managing human errors.                                                                        
+The Spaceflight project aims to build a toolbox to ease administration and orchestration of infrastructure, in the broadest sense of those concepts, with the goal of managing human errors.
 
 ## Definition
 
-This project is focused to create a set of composable tools and components, independent and scoped, mostly built with Go, and intended to be useful for managing AWS, but looking forward to see other platforms and providers contributed.                         
+This project is focused to create a set of composable tools and components, independent and scoped, mostly built with Go, and intended to be useful for managing AWS, but looking forward to see other platforms and providers contributed.
 
 You'll find we talk about tool types. Keep reading for a description:
 
@@ -50,9 +50,9 @@ We'll not be accepting PRs if they:
 
 ## Licensing and philosophy
 
-Our philosophy relies on free software and open source, and we want the code in this repository to be shared with everyone, receiving contributions from anyone. So we agreed on these licensing:                                                                                                 
+Our philosophy relies on free software and open source, and we want the code in this repository to be shared with everyone, receiving contributions from anyone. So we agreed on these licensing:
 
-- All the tools (i.e. commands, Go’s main package) in this repository are licensed under GPL License, so these can’t be imported in to closed projects.                                                                                                              
+- All the tools (i.e. commands, Go’s main package) in this repository are licensed under GPL License, so these can’t be imported in to closed projects.
 - All the libraries are licensed under 3-Clause BSD License, to foster sharing.
 
 Of course, we hope to hear back from you, whatever you do with these tools.
