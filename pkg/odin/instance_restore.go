@@ -82,6 +82,10 @@ func RestoreInstance(
 	}
 	result = *instance.Endpoint.Address
 	err = modifyInstance(instanceName, params, svc)
+	if err != nil {
+		return
+	}
+	err = WaitForInstance(instance, svc, "available")
 	return
 }
 
